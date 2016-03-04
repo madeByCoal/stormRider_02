@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/Storm Rider/Scenes/test_07.unity
+  isLoaded: 1
+  isActive: 1
