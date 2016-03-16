@@ -9,6 +9,6 @@ public class SR_LayerController : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		gameObject.GetComponent<Renderer>().sortingOrder = (int)(gameObject.transform.position.y * enlarge);
+		gameObject.GetComponent<Renderer>().sortingOrder = -(int)(gameObject.transform.position.y * enlarge);
 	}
 }

@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stormRider_02.CSharp.Plugins", "stormRider_02.CSharp.Plugins.csproj", "{B586AD62-8A44-120F-8145-20695AF11273}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stormRider_02.CSharp", "stormRider_02.CSharp.csproj", "{7EF26206-73BF-6D1A-D775-F29574F0A65D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stormRider_02.CSharp.Editor", "stormRider_02.CSharp.Editor.csproj", "{0E1494AC-2C1D-B779-96D2-8A72AD83BBDE}"
@@ -11,6 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B586AD62-8A44-120F-8145-20695AF11273}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B586AD62-8A44-120F-8145-20695AF11273}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B586AD62-8A44-120F-8145-20695AF11273}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B586AD62-8A44-120F-8145-20695AF11273}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7EF26206-73BF-6D1A-D775-F29574F0A65D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7EF26206-73BF-6D1A-D775-F29574F0A65D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7EF26206-73BF-6D1A-D775-F29574F0A65D}.Release|Any CPU.ActiveCfg = Release|Any CPU

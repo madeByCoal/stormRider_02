@@ -36,4 +36,7 @@ public class SR_Character_Controller_2 : MonoBehaviour
 
 		GetComponent<Rigidbody2D>().AddForce (moveDirection * moveForce * Time.deltaTime);
 	}
+
+
+
 }
