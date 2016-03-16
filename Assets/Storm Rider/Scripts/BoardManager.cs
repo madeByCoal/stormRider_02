@@ -23,116 +23,115 @@ namespace Completed
             }
         }
 
-        public int columns = 8;                                         //Number of columns in our game board.
-        public int rows = 8;                                            //Number of rows in our game board.
-        public GameObject[] floorTiles;                                 //Array of floor prefabs.
-        public GameObject[] outerWallTiles;                             //Array of outer tile prefabs.
-        private Transform boardHolder;                                  //A variable to store a reference to the transform of our Board object.
-        private List<Vector3> gridPositions = new List<Vector3>();   //A list of possible locations to place tiles.
+        private int startCoordX;
+        private int startCoordY;
+        private int endCoordX;
+        private int endCoordY;
+        //private int PreLoadLenth;
+        //private int PreLoadWidth;
+        public GameObject[] floorTiles;                                 
+        public GameObject[] outerWallTiles;                           
+        private Transform boardHolder;
+        private Dictionary<Vector3, GameObject> mapHolder;
 
-
-        void InitialiseMapRange()           //依摄像机可视范围计算初始map大小
+        void Awake()
         {
-            Vector3 clampVector = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, Camera.main.pixelHeight, 0));
-            float clampWidth = (clampVector - Camera.main.transform.position).x;
-            float clampHeight = (clampVector - Camera.main.transform.position).y;
-            columns = Mathf.FloorToInt(clampWidth);
-            rows = Mathf.FloorToInt(clampHeight);
+            mapHolder = new Dictionary<Vector3, GameObject>();
+        }
+
+        void CalMapRange()           //依摄像机可视范围计算map坐标范围
+        {
+            Vector3 vector_ScreenToWorld = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, Camera.main.pixelHeight, 0));
+            float clampCoordX_max = (vector_ScreenToWorld - Camera.main.transform.position).x;
+            float clampCoordY_max = (vector_ScreenToWorld - Camera.main.transform.position).y;
+            endCoordX = Mathf.FloorToInt(clampCoordX_max);
+            endCoordY = Mathf.FloorToInt(clampCoordY_max) *2;            //行数为2倍 因为y轴移动坐标为一半
+            startCoordX = -endCoordX;
+            startCoordY = -endCoordY;
         }
 
 
-        void InitialiseList()
-        {
-            gridPositions.Clear();
-            for (int x = 1; x < columns - 1; x++)
-            {
-                for (int y = 1; y < rows - 1; y++)
-                {
-                    gridPositions.Add(new Vector3(x, y, 0f));
-                }
-            }
-        }
 
-        void BoardSetup()
+        
+
+        void MapGenerator(int xStart,int yStart, int xEnd,int yEnd)
         {
-            boardHolder = new GameObject("Board").transform;
-            for (int x = 0; x <= columns; x++)
+            for (int x = xStart; x <= xEnd; x++)
             {
-                for (int y = 0; y <= rows; y++)
+                for (int y = yStart; y <= yEnd; y++)
                 {
                     GameObject toInstantiate = null;
                     GameObject instance = null;
                     Vector3 InstantiatePositon;
-                    if (x < 1 || x == columns || y < 1 || y == rows)
-                    {
-                        toInstantiate = outerWallTiles[Random.Range(0, outerWallTiles.Length)];
-                    }
-                    else
-                    {
-                        toInstantiate = floorTiles[Random.Range(0, floorTiles.Length)];
-                    }
-                  
+                    //if (Mathf.Abs(x) == columns || Mathf.Abs(y) == rows)
+                    //{
+                    //    toInstantiate = outerWallTiles[Random.Range(0, outerWallTiles.Length)];
+                    //}
+                    //else
+                    //{
+                    //    toInstantiate = floorTiles[Random.Range(0, floorTiles.Length)];
+                    //}
+
+                    toInstantiate = floorTiles[Random.Range(0, floorTiles.Length)];
+
                     if ((x % 2 == 0 && y % 2 == 0)||(x % 2 != 0 && y % 2 != 0))     //同为奇数或偶数
                     {
                         InstantiatePositon = new Vector3(x, y/2f, 0f);
                         instance = Instantiate(toInstantiate, InstantiatePositon, Quaternion.identity) as GameObject;
                         instance.name = string.Concat(toInstantiate.name, x.ToString(), y.ToString());
                         instance.transform.SetParent(boardHolder);
+                        UpdateMapHolder(instance.transform.position, instance);
+                        //mapHolder.Add(instance.transform.position, instance);
                     }
                 }
             }
         }
-
-        Vector3 RandomPosition()
+        void UpdateMapHolder(Vector3 position,GameObject Tile)
         {
-            int randomIndex = Random.Range(0, gridPositions.Count);
-            Vector3 randomPosition = gridPositions[randomIndex];
-            gridPositions.RemoveAt(randomIndex);
-            return randomPosition;
-        }
-
-        void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum)
-        {
-            int objectCount = Random.Range(minimum, maximum + 1);
-
-            //Instantiate objects until the randomly chosen limit objectCount is reached
-            for (int i = 0; i < objectCount; i++)
+            if (!mapHolder.ContainsKey(position))
             {
-                //Choose a position for randomPosition by getting a random position from our list of available Vector3s stored in gridPosition
-                Vector3 randomPosition = RandomPosition();
-
-                //Choose a random tile from tileArray and assign it to tileChoice
-                GameObject tileChoice = tileArray[Random.Range(0, tileArray.Length)];
-
-                //Instantiate tileChoice at the position returned by RandomPosition with no change in rotation
-                Instantiate(tileChoice, randomPosition, Quaternion.identity);
+                mapHolder.Add(position, Tile);
             }
         }
 
 
-        //SetupScene initializes our level and calls the previous functions to lay out the game board
-        public void SetupScene(int level)
+        //Vector3 RandomPosition()
+        //{
+        //    int randomIndex = Random.Range(0, gridPositions.Count);
+        //    Vector3 randomPosition = gridPositions[randomIndex];
+        //    gridPositions.RemoveAt(randomIndex);
+        //    return randomPosition;
+        //}
+
+        //void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum)
+        //{
+        //    int objectCount = Random.Range(minimum, maximum + 1);
+        //    for (int i = 0; i < objectCount; i++)
+        //    {
+        //        Vector3 randomPosition = RandomPosition();
+        //        GameObject tileChoice = tileArray[Random.Range(0, tileArray.Length)];
+        //        Instantiate(tileChoice, randomPosition, Quaternion.identity);
+        //    }
+        //}
+
+
+        public void InitialiseMap(int level)
         {
-            InitialiseMapRange();
-            BoardSetup();
+            CalMapRange();
+            boardHolder = new GameObject("Board").transform;
+            MapGenerator(startCoordX,startCoordY,endCoordX,endCoordY);
+        }
 
-            //Reset our list of gridpositions.
-            InitialiseList();
+        public void UpdateMap(int level)
+        {
+            //get player's move dircetion
+            //set,get lenth(distence) and width for map generation
+            //check if any tile exisitence in new map coordinate 
+            //gen map where is empty
 
-            //Instantiate a random number of wall tiles based on minimum and maximum, at randomized positions.
-            //LayoutObjectAtRandom(wallTiles, wallCount.minimum, wallCount.maximum);
-
-            //Instantiate a random number of food tiles based on minimum and maximum, at randomized positions.
-            //LayoutObjectAtRandom(foodTiles, foodCount.minimum, foodCount.maximum);
-
-            //Determine number of enemies based on current level number, based on a logarithmic progression
-            //int enemyCount = (int)Mathf.Log(level, 2f);
-
-            //Instantiate a random number of enemies based on minimum and maximum, at randomized positions.
-           // LayoutObjectAtRandom(enemyTiles, enemyCount, enemyCount);
-
-            //Instantiate the exit tile in the upper right hand corner of our game board
-            //Instantiate(exit, new Vector3(columns - 1, rows - 1, 0f), Quaternion.identity);
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            //Vector3 moveDirection = player.GetComponent<SR_Character_Controller_4>().moveDirection;
+            CalMapRange();
         }
     }
 }
