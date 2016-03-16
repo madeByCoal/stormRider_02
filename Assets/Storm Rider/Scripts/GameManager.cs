@@ -24,18 +24,14 @@ namespace Completed
             }
             DontDestroyOnLoad(gameObject);
             boardScript = GetComponent<BoardManager>();
-            InitGame();
+            //InitGame();
         }
 
-        void InitGame()
+   
+
+        void FixedUpdate()
         {
-            boardScript.InitialiseMap(level);
-        }
-
-
-        void Update()
-        {
-
+            boardScript.UpdateMap(level);
         }
     }
 }

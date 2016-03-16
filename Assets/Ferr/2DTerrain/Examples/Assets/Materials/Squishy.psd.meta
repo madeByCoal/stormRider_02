@@ -1,5 +1,7 @@
 fileFormatVersion: 2
 guid: 2726955f0c088804f9d20367a9a6053a
+timeCreated: 1458140669
+licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: Idle0
@@ -28,7 +30,7 @@ TextureImporter:
   bumpmap:
     convertToNormalMap: 0
     externalNormalMap: 0
-    heightScale: .25
+    heightScale: 0.25
     normalMapFilter: 0
   isReadable: 0
   grayScaleToAlpha: 0
@@ -48,11 +50,12 @@ TextureImporter:
   lightmap: 0
   rGBM: 0
   compressionQuality: 50
+  allowsAlphaSplitting: 0
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
-  spritePivot: {x: .5, y: .5}
+  spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 48
   alphaIsTransparency: 1
@@ -67,9 +70,17 @@ TextureImporter:
         y: 208
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 6, y: 26.800003}
+        - {x: -10, y: 26.800003}
+        - {x: -23, y: 12.800003}
+        - {x: -23, y: -7.199997}
+        - {x: 21, y: -7.199997}
+        - {x: 21, y: 7.800003}
+        - {x: 15, y: 23.800003}
     - name: Idle1
       rect:
         serializedVersion: 2
@@ -77,9 +88,17 @@ TextureImporter:
         y: 208
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -22, y: 11.800003}
+        - {x: -22, y: -4.199997}
+        - {x: -21, y: -7.199997}
+        - {x: 22, y: -7.199997}
+        - {x: 22, y: 19.800003}
+        - {x: 5, y: 26.800003}
+        - {x: -12, y: 26.800003}
     - name: Idle2
       rect:
         serializedVersion: 2
@@ -87,9 +106,16 @@ TextureImporter:
         y: 208
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -18, y: 25.800003}
+        - {x: -24, y: 6.800003}
+        - {x: -24, y: -7.199997}
+        - {x: 20, y: -7.199997}
+        - {x: 20, y: 16.800003}
+        - {x: 7, y: 25.800003}
     - name: Idle3
       rect:
         serializedVersion: 2
@@ -97,9 +123,17 @@ TextureImporter:
         y: 208
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -17, y: 26.800003}
+        - {x: -22, y: 15.800003}
+        - {x: -22, y: -7.199997}
+        - {x: 20, y: -7.199997}
+        - {x: 20, y: 18.800003}
+        - {x: 19, y: 21.800003}
+        - {x: 8, y: 26.800003}
     - name: Idle4
       rect:
         serializedVersion: 2
@@ -107,9 +141,19 @@ TextureImporter:
         y: 208
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 14, y: 26.800003}
+        - {x: -7, y: 26.800003}
+        - {x: -21, y: 22.800003}
+        - {x: -21, y: -1.199997}
+        - {x: -19, y: -7.199997}
+        - {x: 22, y: -7.199997}
+        - {x: 23, y: -6.199997}
+        - {x: 23, y: 8.800003}
+        - {x: 19, y: 20.800003}
     - name: Jump0
       rect:
         serializedVersion: 2
@@ -117,9 +161,23 @@ TextureImporter:
         y: 160
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -22, y: 1.800003}
+        - {x: -22, y: -7.199997}
+        - {x: 20, y: -7.199997}
+        - {x: 20, y: 12.800003}
+        - {x: 16, y: 29.800003}
+        - {x: 8, y: 32.800003}
+        - {x: -10, y: 32.800003}
+        - {x: -15, y: 25.800003}
+      - - {x: -4, y: 40.800003}
+        - {x: -3, y: 37.800003}
+        - {x: 10, y: 37.800003}
+        - {x: 12, y: 39.800003}
+        - {x: 12, y: 40.800003}
     - name: Fly0
       rect:
         serializedVersion: 2
@@ -127,9 +185,16 @@ TextureImporter:
         y: 160
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16, y: 40.800003}
+        - {x: -16, y: -7.199997}
+        - {x: 11, y: -7.199997}
+        - {x: 15, y: -6.199997}
+        - {x: 15, y: 34.800003}
+        - {x: 10, y: 40.800003}
     - name: Fly1
       rect:
         serializedVersion: 2
@@ -137,9 +202,16 @@ TextureImporter:
         y: 160
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16, y: 40.800003}
+        - {x: -16, y: 3.800003}
+        - {x: -13, y: -7.199997}
+        - {x: 13, y: -7.199997}
+        - {x: 13, y: 38.800003}
+        - {x: 10, y: 40.800003}
     - name: Fly2
       rect:
         serializedVersion: 2
@@ -147,9 +219,17 @@ TextureImporter:
         y: 160
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 40.800003}
+        - {x: -15, y: 35.800003}
+        - {x: -15, y: -7.199997}
+        - {x: 13, y: -7.199997}
+        - {x: 16, y: -0.19999695}
+        - {x: 16, y: 38.800003}
+        - {x: 14, y: 40.800003}
     - name: Fly3
       rect:
         serializedVersion: 2
@@ -157,9 +237,17 @@ TextureImporter:
         y: 160
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -17, y: 40.800003}
+        - {x: -17, y: 8.800003}
+        - {x: -15, y: 0.80000305}
+        - {x: -11, y: -6.199997}
+        - {x: 14, y: -6.199997}
+        - {x: 16, y: 0.80000305}
+        - {x: 16, y: 40.800003}
     - name: Land0
       rect:
         serializedVersion: 2
@@ -167,9 +255,23 @@ TextureImporter:
         y: 112
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 15, y: 24.800003}
+        - {x: -10, y: 24.800003}
+        - {x: -21, y: 21.800003}
+        - {x: -24, y: 5.800003}
+        - {x: -24, y: -7.199997}
+        - {x: 22, y: -7.199997}
+        - {x: 22, y: 1.800003}
+        - {x: 21, y: 5.800003}
+      - - {x: -18, y: 40.800003}
+        - {x: -17, y: 37.800003}
+        - {x: 14, y: 37.800003}
+        - {x: 16, y: 39.800003}
+        - {x: 16, y: 40.800003}
     - name: Land1
       rect:
         serializedVersion: 2
@@ -177,9 +279,17 @@ TextureImporter:
         y: 112
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 10, y: 18.800003}
+        - {x: -11, y: 18.800003}
+        - {x: -24, y: 15.800003}
+        - {x: -24, y: -7.199997}
+        - {x: 24, y: -7.199997}
+        - {x: 24, y: 6.800003}
+        - {x: 23, y: 8.800003}
     - name: Land2
       rect:
         serializedVersion: 2
@@ -187,9 +297,17 @@ TextureImporter:
         y: 112
         width: 48
         height: 48
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -11, y: 22.800003}
+        - {x: -24, y: 5.800003}
+        - {x: -24, y: -7.199997}
+        - {x: 24, y: -7.199997}
+        - {x: 24, y: 5.800003}
+        - {x: 11, y: 22.800003}
+    outline: []
   spritePackingTag: 
   userData: 
   assetBundleName: 

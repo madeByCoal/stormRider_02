@@ -15,17 +15,23 @@ public enum MoveDirection
     SouthWest
 }
 
-public class SR_Character_Controller_4 : MonoBehaviour {
+public class SR_Character_Controller_4 : MonoBehaviour
+{
 	public PlayerState playerState;
 	public MoveDirection moveDirection;
     public Vector3 direcVector;
-	public GameObject DestFloor;
+    public GameObject GameManager;
+    public GameObject targetFloor;
+    private GameObject currentFloor;
+
     private float isometricAngle;
-    //public float moveStep;
-    // Use this for initialization
+    public float moveStep;
+    
+ 
     void Start () {
         moveDirection = MoveDirection.NorthEast;
-        isometricAngle = Mathf.Rad2Deg * Mathf.Atan2(0.5f, 1f);
+        isometricAngle = Mathf.Rad2Deg * Mathf.Atan2(0.5f, 1f);   //根据x，y坐标比值算出视角
+        GameManager = GameObject.FindGameObjectWithTag("GameController");
     }
 
     void DirectionToVector(MoveDirection moveDirection)
@@ -49,22 +55,10 @@ public class SR_Character_Controller_4 : MonoBehaviour {
         }
     }
 
-    void switchDirection()
+    void changeMoveDirection()
     {
-        //switch (KeyCode.all)
-        //{
-        //    default:
-        //        break;
-        //}
-    }
-
-	// Update is called once per frame
-	void Update () {
-
-          
         if (Input.GetKeyDown("w"))
         {
-            //iTween.MoveTo(gameObject, DestFloor.transform.position, 2f);
             moveDirection = MoveDirection.NorthEast;
         }
         else if (Input.GetKeyDown("a"))
@@ -79,15 +73,46 @@ public class SR_Character_Controller_4 : MonoBehaviour {
         {
             moveDirection = MoveDirection.SouthEast;
         }
+        GameManager.SendMessage("getPlayerDir", moveDirection);
+    }
 
+	void Update ()
+    {
+        changeMoveDirection();
         DirectionToVector(moveDirection);
+        getTargetFloor();
         DispalyVelocitys();
-	}
+        Move();
+    }
 
-	void DispalyVelocitys()
+    void Move()
+    {
+        transform.position += direcVector * Time.deltaTime*moveStep;
+    }
+
+    void DispalyVelocitys ()
 	{
         Debug.DrawRay(transform.position, direcVector, Color.cyan);
     }
 
+
+    void getTargetFloor()
+    {
+        Physics2D.queriesStartInColliders = false;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direcVector);
+        if (hit.collider.tag == "Floor")
+        {
+            targetFloor = hit.collider.gameObject;
+        }
+    }
+    void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.tag == "Floor")
+        {
+            currentFloor = other.gameObject;
+        }
+    }
+
+    
 
 }

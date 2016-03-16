@@ -23,36 +23,61 @@ namespace Completed
             }
         }
 
-        private int startCoordX;
-        private int startCoordY;
-        private int endCoordX;
-        private int endCoordY;
+        public int startCoordX;
+        public int startCoordY;
+        public int endCoordX;
+        public int endCoordY;
         //private int PreLoadLenth;
         //private int PreLoadWidth;
         public GameObject[] floorTiles;                                 
         public GameObject[] outerWallTiles;                           
         private Transform boardHolder;
         private Dictionary<Vector3, GameObject> mapHolder;
+        private MoveDirection playerMoveDir;
 
         void Awake()
         {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
             mapHolder = new Dictionary<Vector3, GameObject>();
+            boardHolder = new GameObject("Board").transform;
         }
 
-        void CalMapRange()           //依摄像机可视范围计算map坐标范围
+        void CalMapCoord()           //依摄像机可视范围计算map坐标范围
         {
-            Vector3 vector_ScreenToWorld = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, Camera.main.pixelHeight, 0));
-            float clampCoordX_max = (vector_ScreenToWorld - Camera.main.transform.position).x;
-            float clampCoordY_max = (vector_ScreenToWorld - Camera.main.transform.position).y;
-            endCoordX = Mathf.FloorToInt(clampCoordX_max);
-            endCoordY = Mathf.FloorToInt(clampCoordY_max) *2;            //行数为2倍 因为y轴移动坐标为一半
-            startCoordX = -endCoordX;
-            startCoordY = -endCoordY;
+            Vector3 vector_ScreenToWorldPoint_Max = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, Camera.main.pixelHeight, 0));
+            Vector3 vector_ScreenToWorldPoint_Min = Camera.main.ScreenToWorldPoint(Vector3.zero);
+            int maxCoordX = Mathf.CeilToInt((vector_ScreenToWorldPoint_Max - Camera.main.transform.position).x);
+            int maxCoordY = Mathf.CeilToInt((vector_ScreenToWorldPoint_Max - Camera.main.transform.position).y) * 2;            //行数为2倍 因为y轴移动坐标为一半
+
+
+            startCoordX = Mathf.CeilToInt(vector_ScreenToWorldPoint_Min.x);
+            startCoordY = Mathf.CeilToInt(vector_ScreenToWorldPoint_Min.y)*2;                  //行数为2倍 因为y轴移动坐标为一半
+            endCoordX = Mathf.CeilToInt(vector_ScreenToWorldPoint_Max.x);
+            endCoordY = Mathf.CeilToInt(vector_ScreenToWorldPoint_Max.y)*2;
+
+            switch (playerMoveDir)
+            {
+                case MoveDirection.NorthEast:
+                    endCoordX += Mathf.RoundToInt(maxCoordX / 2);
+                    endCoordY += Mathf.RoundToInt(maxCoordY / 2);
+                    break;
+                case MoveDirection.NorthWest:
+                    startCoordX -= Mathf.RoundToInt(maxCoordX / 2);
+                    endCoordY += Mathf.RoundToInt(maxCoordY / 2);
+                    break;
+                case MoveDirection.SouthEast:
+                    startCoordY -= Mathf.RoundToInt(maxCoordY / 2);
+                    endCoordX += Mathf.RoundToInt(maxCoordX / 2);
+                    break;
+                case MoveDirection.SouthWest:
+                    startCoordX -= Mathf.RoundToInt(maxCoordX / 2);
+                    startCoordY -= Mathf.RoundToInt(maxCoordY / 2);
+                    break;
+                default:
+                    break;
+            }
         }
 
-
-
-        
 
         void MapGenerator(int xStart,int yStart, int xEnd,int yEnd)
         {
@@ -61,7 +86,7 @@ namespace Completed
                 for (int y = yStart; y <= yEnd; y++)
                 {
                     GameObject toInstantiate = null;
-                    GameObject instance = null;
+                    
                     Vector3 InstantiatePositon;
                     //if (Mathf.Abs(x) == columns || Mathf.Abs(y) == rows)
                     //{
@@ -77,21 +102,23 @@ namespace Completed
                     if ((x % 2 == 0 && y % 2 == 0)||(x % 2 != 0 && y % 2 != 0))     //同为奇数或偶数
                     {
                         InstantiatePositon = new Vector3(x, y/2f, 0f);
-                        instance = Instantiate(toInstantiate, InstantiatePositon, Quaternion.identity) as GameObject;
-                        instance.name = string.Concat(toInstantiate.name, x.ToString(), y.ToString());
-                        instance.transform.SetParent(boardHolder);
-                        UpdateMapHolder(instance.transform.position, instance);
-                        //mapHolder.Add(instance.transform.position, instance);
+                        if (!mapHolder.ContainsKey(InstantiatePositon))
+                        {
+                            UpdateMapHolder(InstantiatePositon, toInstantiate);
+                        }
                     }
                 }
             }
         }
-        void UpdateMapHolder(Vector3 position,GameObject Tile)
+
+        void UpdateMapHolder(Vector3 position,GameObject sourceTile)
         {
-            if (!mapHolder.ContainsKey(position))
-            {
-                mapHolder.Add(position, Tile);
-            }
+            GameObject instanceTile = null;
+            instanceTile = Instantiate(sourceTile, position, Quaternion.identity) as GameObject;
+            instanceTile.name = string.Concat(sourceTile.name,"_", position.x.ToString(),"_", position.y.ToString());
+            instanceTile.transform.SetParent(boardHolder);
+            mapHolder.Add(position, instanceTile);
+
         }
 
 
@@ -114,14 +141,6 @@ namespace Completed
         //    }
         //}
 
-
-        public void InitialiseMap(int level)
-        {
-            CalMapRange();
-            boardHolder = new GameObject("Board").transform;
-            MapGenerator(startCoordX,startCoordY,endCoordX,endCoordY);
-        }
-
         public void UpdateMap(int level)
         {
             //get player's move dircetion
@@ -129,9 +148,15 @@ namespace Completed
             //check if any tile exisitence in new map coordinate 
             //gen map where is empty
 
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            //Vector3 moveDirection = player.GetComponent<SR_Character_Controller_4>().moveDirection;
-            CalMapRange();
+           
+            CalMapCoord();
+            
+            MapGenerator(startCoordX, startCoordY, endCoordX, endCoordY);
         }
+        public void getPlayerDir(MoveDirection dir)
+        {
+            playerMoveDir = dir;
+        }
+
     }
 }
