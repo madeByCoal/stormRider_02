@@ -22,7 +22,7 @@ public class SR_Character_Controller_4 : MonoBehaviour
     public Vector3 direcVector;
     public GameObject GameManager;
     public GameObject targetFloor;
-    private GameObject currentFloor;
+    public GameObject currentFloor;
 
     private float isometricAngle;
     public float moveStep;
@@ -78,16 +78,22 @@ public class SR_Character_Controller_4 : MonoBehaviour
 
 	void Update ()
     {
-        changeMoveDirection();
-        DirectionToVector(moveDirection);
-        getTargetFloor();
         DispalyVelocitys();
+
+        changeMoveDirection();
+        getCurentFloor();
+        if (currentFloor != null)
+        {
+            DirectionToVector(moveDirection);
+        }
+        //DirectionToVector(moveDirection);
+        getTargetFloor();
         Move();
     }
 
     void Move()
     {
-        transform.position += direcVector * Time.deltaTime*moveStep;
+        transform.position = Vector3.MoveTowards(transform.position, targetFloor.transform.position, Time.deltaTime * moveStep);
     }
 
     void DispalyVelocitys ()
@@ -95,24 +101,37 @@ public class SR_Character_Controller_4 : MonoBehaviour
         Debug.DrawRay(transform.position, direcVector, Color.cyan);
     }
 
+    void getCurentFloor()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.forward);
+        if (hit.collider != null && hit.collider.tag == "Floor")
+        {
+            currentFloor = hit.collider.gameObject;
+        }
+    }
 
     void getTargetFloor()
     {
         Physics2D.queriesStartInColliders = false;
+
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direcVector);
-        if (hit.collider.tag == "Floor")
+        if (hit.collider != null && hit.collider.tag == "Floor")
         {
             targetFloor = hit.collider.gameObject;
         }
-    }
-    void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.tag == "Floor")
-        {
-            currentFloor = other.gameObject;
-        }
-    }
 
-    
+        //int hitCount;
+        //RaycastHit2D [] hits = new RaycastHit2D[2];
+        //hitCount = Physics2D.LinecastNonAlloc(transform.position, direcVector,hits);
 
+        //foreach (RaycastHit2D hit in hits)
+        //{
+        //    Debug.Log("hitCount =" + hitCount);
+        //    if ( hit.transform != null && hit.transform.tag == "Floor")
+        //    {
+        //        Debug.Log("getTargetFloor");
+        //        targetFloor = hit.collider.gameObject;
+        //    }
+        //}
+    }
 }

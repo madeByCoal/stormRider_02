@@ -100,6 +100,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Custom 2D Colliders\Scripts\Editor\ArcCollider2D_Editor.cs" />
+    <Compile Include="Assets\Custom 2D Colliders\Scripts\Editor\BezierCurveCollider2D_Editor.cs" />
+    <Compile Include="Assets\Custom 2D Colliders\Scripts\Editor\CapsuleCollider2D_Editor.cs" />
+    <Compile Include="Assets\Custom 2D Colliders\Scripts\Editor\EllipseCollider2D_Editor.cs" />
+    <Compile Include="Assets\Custom 2D Colliders\Scripts\Editor\RoundedBoxCollider2D_Editor.cs" />
+    <Compile Include="Assets\Custom 2D Colliders\Scripts\Editor\StarCollider2D_Editor.cs" />
     <Compile Include="Assets\Ferr\2D\Editor\Ferr2D_PathEditor.cs" />
     <Compile Include="Assets\Ferr\2DTerrain\Editor\Ferr2DT_Builder.cs" />
     <Compile Include="Assets\Ferr\2DTerrain\Editor\Ferr2DT_ComponentTracker.cs" />
