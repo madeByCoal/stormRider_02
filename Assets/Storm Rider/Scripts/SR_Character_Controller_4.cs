@@ -4,43 +4,63 @@ using System.Collections;
 public enum PlayerState
 {
 	Move,
+    Slide,
 	Die
 }
 
 public enum Direction
 {
+    North,
     NorthEast,
-    NorthWest,
+    East,
     SouthEast,
-    SouthWest
+    South,
+    SouthWest,
+    West,
+    NorthWest
 }
 
 public class SR_Character_Controller_4 : MonoBehaviour
 {
 	public PlayerState playerState;
 	public Direction moveDirection;
+    public Direction tempDirection;
     public Vector3 direcVector;
-    private Vector3 sliderVector_R;
-    private Vector3 sliderVector_L;
     public GameObject GameManager;
     public GameObject targetFloor;
     public GameObject currentFloor;
-
     private float isometricAngle;
+    
     private Animator anim;
     public float moveStep;
-    
+
+
+    void Awake()
+    {
+        playerState = PlayerState.Move;
+    }
  
     void Start () {
-        //moveDirection = MoveDirection.NorthEast;
         isometricAngle = Mathf.Rad2Deg * Mathf.Atan2(0.5f, 1f);   //根据x，y坐标比值算出视角
+        direcVector = DirectionToVector(moveDirection);
         GameManager = GameObject.FindGameObjectWithTag("GameController");
         anim = GetComponent<Animator>();
     }
 
+    void Update()
+    {
+        DispalyVelocitys();
+        playAnimation();
+        changeMoveDirection();
+        Move();
+
+        DisplayTargetFloor();
+
+    }
+
     Vector3 DirectionToVector(Direction moveDirection)
     {
-        Vector3 moveVector=  Vector3.one;
+        Vector3 moveVector = Vector3.one;
         switch (moveDirection)
         {
             case Direction.NorthEast:
@@ -55,6 +75,18 @@ public class SR_Character_Controller_4 : MonoBehaviour
             case Direction.SouthWest:
                 moveVector = Quaternion.AngleAxis(-(180 - isometricAngle), transform.forward) * transform.right;
                 break;
+            case Direction.North:
+                moveVector = transform.up;
+                break;
+            case Direction.South:
+                moveVector = -transform.up;
+                break;
+            case Direction.East:
+                moveVector = transform.right;
+                break;
+            case Direction.West:
+                moveVector = -transform.right;
+                break;
             default:
                 break;
         }
@@ -63,38 +95,20 @@ public class SR_Character_Controller_4 : MonoBehaviour
 
     void changeMoveDirection()
     {
-        if (Input.GetKeyDown("w"))
+        if (Input.GetButtonDown("Horizontal"))
         {
-            moveDirection = Direction.NorthEast;
-        }
-        else if (Input.GetKeyDown("a"))
-        {
-            moveDirection = Direction.NorthWest;
-        }
-        else if (Input.GetKeyDown("s"))
-        {
-            moveDirection = Direction.SouthWest;
-        }
-        else if (Input.GetKeyDown("d"))
-        {
-            moveDirection = Direction.SouthEast;
-        }
-        GameManager.SendMessage("getPlayerDir", moveDirection);
-    }
-
-	void Update ()
-    {
-        DispalyVelocitys();
-        playAnimation();
-        changeMoveDirection();
-        getCurentFloor();
-        if (currentFloor != null)
-        {
+            moveDirection = GetNewDirection(moveDirection,Mathf.CeilToInt(Input.GetAxis("Horizontal")),2);
             direcVector = DirectionToVector(moveDirection);
         }
-        getTargetFloor();
-        Move();
-        Slide();
+
+        if (Input.GetButtonDown ("Slide"))
+        {
+            playerState = PlayerState.Slide;
+            tempDirection = GetNewDirection(moveDirection, Mathf.CeilToInt(Input.GetAxis("Slide")), 1);
+            direcVector = DirectionToVector(tempDirection);
+        }
+     
+        GameManager.SendMessage("getPlayerDir", moveDirection);
     }
 
     void playAnimation()
@@ -106,14 +120,14 @@ public class SR_Character_Controller_4 : MonoBehaviour
             case Direction.NorthWest:
                 break;
             case Direction.SouthEast:
-                if (Input.GetKey("s"))
+                if (Input.GetKeyDown("s"))
                 {
                     Debug.Log("s");
                     anim.SetTrigger("SE-SW");
                 }
                 break;
             case Direction.SouthWest:
-                if (Input.GetKey("d"))
+                if (Input.GetKeyDown("d"))
                 {
                     Debug.Log("d");
                     anim.SetTrigger("SW-SE");
@@ -127,41 +141,64 @@ public class SR_Character_Controller_4 : MonoBehaviour
 
     void Move()
     {
-        transform.position = Vector3.MoveTowards(transform.position, targetFloor.transform.position, Time.deltaTime * moveStep);
-    }
-
-    void Slide()
-    {
-        switch (moveDirection)
+        currentFloor = getCurentFloor();
+        if (targetFloor != null)
         {
-            case Direction.NorthEast:
-                sliderVector_R = DirectionToVector(Direction.SouthEast);
-                sliderVector_L = DirectionToVector(Direction.NorthWest);
+            targetFloor.GetComponent<SpriteRenderer>().color = Color.gray;
+        }
+        switch (playerState)
+        {
+            case PlayerState.Move:
+                if (targetFloor == null || currentFloor == targetFloor)
+                {
+                    targetFloor = getNewTargetFloor();
+                }
                 break;
-            case Direction.NorthWest:
-                sliderVector_R = DirectionToVector(Direction.NorthEast);
-                sliderVector_L = DirectionToVector(Direction.SouthWest);
+            case PlayerState.Slide:
+                if (targetFloor == null || currentFloor == targetFloor)
+                {
+                    targetFloor = getNewTargetFloor();
+                    direcVector = DirectionToVector(moveDirection);
+                    playerState = PlayerState.Move;
+                }
                 break;
-            case Direction.SouthEast:
-                sliderVector_R = DirectionToVector(Direction.SouthWest);
-                sliderVector_L = DirectionToVector(Direction.NorthEast);
-                break;
-            case Direction.SouthWest:
-                sliderVector_R = DirectionToVector(Direction.NorthWest);
-                sliderVector_L = DirectionToVector(Direction.SouthEast);
+            case PlayerState.Die:
                 break;
             default:
                 break;
         }
+        transform.position = Vector3.MoveTowards(transform.position, targetFloor.transform.position, Time.deltaTime * moveStep);
+    }
 
-        if (Input.GetKeyDown("u"))
+
+    Direction GetNewDirection(Direction curDir,int indexShift,int indexStep)
+    {
+        Direction newDir = curDir;
+        if (curDir == Direction.NorthWest && indexShift > 0)
         {
-            transform.position += sliderVector_L;
+            if (indexStep == 1)
+            {
+                newDir = Direction.North;
+            }
+            else if (indexStep == 2)
+            {
+                newDir = Direction.NorthEast;
+            }
         }
-        else if (Input.GetKeyDown("i"))
+        else  if (curDir == Direction.NorthEast && indexShift < 0)
         {
-            transform.position += sliderVector_R;
+            if (indexStep == 2)
+            {
+                newDir = Direction.NorthWest;
+            }
         }
+
+        else
+        {
+            newDir = curDir + indexShift * indexStep;
+        }
+
+        return newDir;
     }
 
     void DispalyVelocitys ()
@@ -169,27 +206,46 @@ public class SR_Character_Controller_4 : MonoBehaviour
         Debug.DrawRay(transform.position, direcVector, Color.cyan);
     }
 
-    void getCurentFloor()
+    void DisplayTargetFloor()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.forward);
-        if (hit.collider != null && hit.collider.tag == "Floor")
+        if (targetFloor !=null)
         {
-            currentFloor = hit.collider.gameObject;
+            targetFloor.GetComponent<SpriteRenderer>().color = Color.white;
         }
     }
 
-    void getTargetFloor()
+    GameObject getCurentFloor()
     {
-        Physics2D.queriesStartInColliders = false;
+        GameObject curFloor = null;
+        int hitCount;
+        RaycastHit2D[] hits = new RaycastHit2D[3];
+        hitCount = Physics2D.RaycastNonAlloc(transform.position, transform.forward, hits);
+        foreach (RaycastHit2D hit in hits)
+        {
+            if (hit.collider != null && hit.collider.tag == "Floor")
+            {
+                curFloor = hit.collider.gameObject;
+            }
+        }
+        return curFloor;
+    }
+
+    GameObject getNewTargetFloor()
+    {
+        GameObject newTargetFloor = null;
         int hitCount;
         RaycastHit2D[] hits = new RaycastHit2D[3];
         hitCount = Physics2D.RaycastNonAlloc(transform.position, direcVector, hits);
         foreach (RaycastHit2D hit in hits)
         {
-            if (hit.collider != null && hit.collider.tag == "Floor")
+            if (hit.collider != null && hit.collider.tag == "Floor" && hit.collider.gameObject != currentFloor)
             {
-                targetFloor = hit.collider.gameObject;
+                newTargetFloor = hit.collider.gameObject;
+                //newTargetFloor.SendMessage("showMe");
             }
         }
+        return newTargetFloor;
     }
+
+   
 }

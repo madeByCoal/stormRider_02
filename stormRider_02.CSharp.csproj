@@ -161,6 +161,7 @@
     <Compile Include="Assets\Storm Rider\Scripts\bulletDamage.cs" />
     <Compile Include="Assets\Storm Rider\Scripts\mapGenerator.cs" />
     <Compile Include="Assets\Storm Rider\Scripts\monsterAI.cs" />
+    <Compile Include="Assets\display_helper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Ferr\2D\Scripts\poly2tri.cs\AUTHORS.txt" />
