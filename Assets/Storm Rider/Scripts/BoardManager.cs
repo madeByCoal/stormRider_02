@@ -33,7 +33,7 @@ namespace Completed
         public GameObject[] outerWallTiles;                           
         private Transform boardHolder;
         private Dictionary<Vector3, GameObject> mapHolder;
-        private MoveDirection playerMoveDir;
+        private Direction playerMoveDir;
 
         void Awake()
         {
@@ -57,19 +57,19 @@ namespace Completed
 
             switch (playerMoveDir)
             {
-                case MoveDirection.NorthEast:
+                case Direction.NorthEast:
                     endCoordX += Mathf.RoundToInt(maxCoordX / 2);
                     endCoordY += Mathf.RoundToInt(maxCoordY / 2);
                     break;
-                case MoveDirection.NorthWest:
+                case Direction.NorthWest:
                     startCoordX -= Mathf.RoundToInt(maxCoordX / 2);
                     endCoordY += Mathf.RoundToInt(maxCoordY / 2);
                     break;
-                case MoveDirection.SouthEast:
+                case Direction.SouthEast:
                     startCoordY -= Mathf.RoundToInt(maxCoordY / 2);
                     endCoordX += Mathf.RoundToInt(maxCoordX / 2);
                     break;
-                case MoveDirection.SouthWest:
+                case Direction.SouthWest:
                     startCoordX -= Mathf.RoundToInt(maxCoordX / 2);
                     startCoordY -= Mathf.RoundToInt(maxCoordY / 2);
                     break;
@@ -153,7 +153,7 @@ namespace Completed
             
             MapGenerator(startCoordX, startCoordY, endCoordX, endCoordY);
         }
-        public void getPlayerDir(MoveDirection dir)
+        public void getPlayerDir(Direction dir)
         {
             playerMoveDir = dir;
         }
