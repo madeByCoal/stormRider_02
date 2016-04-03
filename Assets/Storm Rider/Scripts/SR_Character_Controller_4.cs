@@ -33,6 +33,9 @@ public class SR_Character_Controller_4 : MonoBehaviour
     
     private Animator anim;
     public float moveStep;
+    public float originMoveStep;
+    public float stepMutiply;
+    private float polarRadius;
 
 
     void Awake()
@@ -44,7 +47,10 @@ public class SR_Character_Controller_4 : MonoBehaviour
         isometricAngle = Mathf.Rad2Deg * Mathf.Atan2(0.5f, 1f);   //根据x，y坐标比值算出视角
         direcVector = DirectionToVector(moveDirection);
         GameManager = GameObject.FindGameObjectWithTag("GameController");
+        GameManager.SendMessage("getPlayerDir", moveDirection);
         anim = GetComponent<Animator>();
+        originMoveStep = moveStep;
+        polarRadius = calPolarRadius();
     }
 
     void Update()
@@ -52,11 +58,12 @@ public class SR_Character_Controller_4 : MonoBehaviour
         DispalyVelocitys();
         playAnimation();
         changeMoveDirection();
+        StepModify();
+        //print (Mathf.Pow(3,2));
         Move();
-
         DisplayTargetFloor();
-
     }
+
 
     Vector3 DirectionToVector(Direction moveDirection)
     {
@@ -97,8 +104,10 @@ public class SR_Character_Controller_4 : MonoBehaviour
     {
         if (Input.GetButtonDown("Horizontal"))
         {
+            playerState = PlayerState.Move;
             moveDirection = GetNewDirection(moveDirection,Mathf.CeilToInt(Input.GetAxis("Horizontal")),2);
             direcVector = DirectionToVector(moveDirection);
+            GameManager.SendMessage("getPlayerDir", moveDirection);
         }
 
         if (Input.GetButtonDown ("Slide"))
@@ -106,9 +115,23 @@ public class SR_Character_Controller_4 : MonoBehaviour
             playerState = PlayerState.Slide;
             tempDirection = GetNewDirection(moveDirection, Mathf.CeilToInt(Input.GetAxis("Slide")), 1);
             direcVector = DirectionToVector(tempDirection);
+            GameManager.SendMessage("getPlayerDir", tempDirection);
+            targetFloor = getNewTargetFloor();
         }
-     
-        GameManager.SendMessage("getPlayerDir", moveDirection);
+
+        switch (playerState)
+        {
+            case PlayerState.Move:
+                GameManager.SendMessage("getPlayerDir", moveDirection);
+                break;
+            case PlayerState.Slide:
+
+                break;
+            case PlayerState.Die:
+                break;
+            default:
+                break;
+        }
     }
 
     void playAnimation()
@@ -120,16 +143,17 @@ public class SR_Character_Controller_4 : MonoBehaviour
             case Direction.NorthWest:
                 break;
             case Direction.SouthEast:
-                if (Input.GetKeyDown("s"))
-                {
-                    Debug.Log("s");
-                    anim.SetTrigger("SE-SW");
-                }
-                break;
-            case Direction.SouthWest:
                 if (Input.GetKeyDown("d"))
                 {
                     Debug.Log("d");
+                    anim.SetTrigger("SE-SW");
+                }
+               
+                break;
+            case Direction.SouthWest:
+                if (Input.GetKeyDown("a"))
+                {
+                    Debug.Log("a");
                     anim.SetTrigger("SW-SE");
                 }
                 break;
@@ -142,32 +166,60 @@ public class SR_Character_Controller_4 : MonoBehaviour
     void Move()
     {
         currentFloor = getCurentFloor();
-        if (targetFloor != null)
+        if (targetFloor == null || transform.position == targetFloor.transform.position)
         {
-            targetFloor.GetComponent<SpriteRenderer>().color = Color.gray;
-        }
-        switch (playerState)
-        {
-            case PlayerState.Move:
-                if (targetFloor == null || currentFloor == targetFloor)
-                {
+            //if (currentFloor == targetFloor)
+            //{
+
+            //}
+            switch (playerState)
+            {
+                case PlayerState.Move:
+                    
                     targetFloor = getNewTargetFloor();
-                }
-                break;
-            case PlayerState.Slide:
-                if (targetFloor == null || currentFloor == targetFloor)
-                {
-                    targetFloor = getNewTargetFloor();
-                    direcVector = DirectionToVector(moveDirection);
+                    
+                    break;
+                case PlayerState.Slide:
+                    direcVector = DirectionToVector(moveDirection);             //set back to move data
                     playerState = PlayerState.Move;
-                }
-                break;
-            case PlayerState.Die:
-                break;
-            default:
-                break;
+                    GameManager.SendMessage("getPlayerDir", moveDirection);
+                    targetFloor = getNewTargetFloor();
+                    break;
+                case PlayerState.Die:
+                    break;
+                default:
+                    break;
+            }
         }
+
+       
         transform.position = Vector3.MoveTowards(transform.position, targetFloor.transform.position, Time.deltaTime * moveStep);
+    }
+
+    void StepModify()
+    {
+        if (playerState == PlayerState.Slide)
+        {
+            if (tempDirection == Direction.East || tempDirection == Direction.West)
+            {
+                moveStep = originMoveStep;
+            }
+            else
+            {
+                moveStep = originMoveStep / 2;
+            }
+        }
+        else if (playerState == PlayerState.Move)
+        {
+            moveStep = originMoveStep * polarRadius;
+        }
+    }
+
+    float calPolarRadius()
+    {
+        float e = Mathf.Sqrt(1 - (Mathf.Pow(0.5f,2) / Mathf.Pow(1,2)));
+        float r = 0.5f / Mathf.Sqrt(1 - Mathf.Pow(e,2) * (1 - Mathf.Cos(isometricAngle * 2 * Mathf.Deg2Rad)));
+        return r;
     }
 
 
@@ -232,20 +284,11 @@ public class SR_Character_Controller_4 : MonoBehaviour
 
     GameObject getNewTargetFloor()
     {
-        GameObject newTargetFloor = null;
-        int hitCount;
-        RaycastHit2D[] hits = new RaycastHit2D[3];
-        hitCount = Physics2D.RaycastNonAlloc(transform.position, direcVector, hits);
-        foreach (RaycastHit2D hit in hits)
+        if (targetFloor != null)
         {
-            if (hit.collider != null && hit.collider.tag == "Floor" && hit.collider.gameObject != currentFloor)
-            {
-                newTargetFloor = hit.collider.gameObject;
-                //newTargetFloor.SendMessage("showMe");
-            }
+            targetFloor.GetComponent<SpriteRenderer>().color = Color.gray;
         }
+        GameObject newTargetFloor = GameManager.GetComponent<BoardManager>().getTargetFloor(currentFloor);
         return newTargetFloor;
     }
-
-   
 }
